@@ -37,10 +37,16 @@
     <ClCompile Include="Gradient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CannyEdge.cpp">
+    <ClCompile Include="Threshold_Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Threshold_Image.cpp">
+    <ClCompile Include="Edge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IBS Matching.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

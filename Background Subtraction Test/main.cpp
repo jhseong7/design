@@ -159,6 +159,7 @@ int main(int argc, char* argv[])
 
 	//Edge map
 	Mat Edge_fore, Edge_back;
+	Mat Edgemap;
 
 
 	TriThreshold Thresh;
@@ -221,14 +222,18 @@ int main(int argc, char* argv[])
 			Edge_fore = Mat(Rows, Cols, CV_8UC1);
 			Edge_back = Mat(Rows, Cols, CV_8UC1);
 
-			Gradient_fore_x = Mat(Rows, Cols, CV_8UC1);
-			Gradient_fore_y = Mat(Rows, Cols, CV_8UC1);
+			Edgemap = Mat(Rows, Cols, CV_8UC1);
 
-			Gradient_back_x = Mat(Rows, Cols, CV_8UC1);
-			Gradient_back_y = Mat(Rows, Cols, CV_8UC1);
+			Gradient_fore_x = Mat(Rows, Cols, CV_16SC1);
+			Gradient_fore_y = Mat(Rows, Cols, CV_16SC1);
 
-			Gradient_diff = Mat(Rows, Cols, CV_8UC1);
+			Gradient_back_x = Mat(Rows, Cols, CV_16SC1);
+			Gradient_back_y = Mat(Rows, Cols, CV_16SC1);
+
+			Gradient_diff = Mat(Rows, Cols, CV_16SC1);
 		}
+
+		//OrigImage = imread("foretest.bmp");
 
 
 		//YCbCr 생성
@@ -253,28 +258,47 @@ int main(int argc, char* argv[])
 
 		//Canny를 이용하여 Edge 검출
 		CannyEdgeDetector(&Edge_fore, &YCrCb_Split[0]);
-		CannyEdgeDetector(&Edge_back, &YCrCb_Back_Split[0]);
+		//CannyEdgeDetector(&Edge_back, &YCrCb_Back_Split[0]);
 
 		GradientMap(&Gradient_fore_x, &Gradient_fore_y, &YCrCb_Split[0]);
 		GradientMap(&Gradient_back_x, &Gradient_back_y, &YCrCb_Back_Split[0]);
 
 		GradientDifference(&Gradient_diff, &Gradient_fore_x, &Gradient_fore_y, &Gradient_back_x, &Gradient_back_y);
+		Mat Graddiff8uc1;
 
-		ThresholdImageCreate(&Gradient_diff, &Gradient_diff);
+		Gradient_diff.convertTo(Graddiff8uc1, CV_8UC1);
+
+
+		//ThresholdImageCreate(&Gradient_diff, &Gradient_diff);
+		ThresholdImageCreate(&Graddiff8uc1, &Graddiff8uc1);
+
+		//morphology START
+		Mat element2 = getStructuringElement(MORPH_CROSS, Size(2 * 2 + 1, 2 * 2 + 1), Point(2, 2));
+
+
+		morphologyEx(Graddiff8uc1, Graddiff8uc1, MORPH_CLOSE, element2);
+		//morphologyEx(Graddiff8uc1, Graddiff8uc1, MORPH_OPEN, element2);
+
+
+		ForegroundEdgeMap(&Edgemap, &Edge_fore, &Graddiff8uc1);
 
 		//Boundary
 		BoundaryMap(&Boundary_Low, &ORmap_Low);
 		BoundaryMap(&Boundary_Med, &ORmap_Med);
 		BoundaryMap(&Boundary_High, &ORmap_High);
+		
 
-		//morphology START
-		//Mat element = getStructuringElement(MORPH_CROSS, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
-		//Mat element2 = getStructuringElement(MORPH_CROSS, Size(2 * morph_size2 + 1, 2 * morph_size2 + 1), Point(morph_size2, morph_size2));
+		//Connected Component Test
+		Mat ConnectLabel_Low, ConnectLabel_Med, ConnectLabel_High;
 
+		connectedComponents(Boundary_Low, ConnectLabel_Low, 8, CV_16U);
+		connectedComponents(Boundary_Med, ConnectLabel_Med, 8, CV_16U);
+		connectedComponents(Boundary_High, ConnectLabel_High, 8, CV_16U);
 
+		imshow("Connect Low", ConnectLabel_Low);
+		imshow("Connect Med", ConnectLabel_Med);
+		imshow("Connect High", ConnectLabel_High);
 
-		//morphologyEx(Cmap, Cmap, MORPH_CLOSE, element2);
-		//morphologyEx(Cmap, Cmap, MORPH_OPEN, element2);
 
 		//morphologyEx(Ymap, Ymap, MORPH_CLOSE, element);
 		//morphologyEx(Ymap, Ymap, MORPH_OPEN, element);
@@ -289,35 +313,60 @@ int main(int argc, char* argv[])
 
 
 		//Image Show
+	
 		
-		
 
-		imshow("Edge fore", Edge_fore);
-		imshow("Edge back", Edge_back);
+		//imshow("Edge fore", Edge_fore);
+		//imshow("Edge back", Edge_back);
 
-		imshow("Gradient fore x", Gradient_fore_x);
-		imshow("Gradient fore y", Gradient_fore_y);
+		imshow("Edge Map", Edgemap);
 
-		imshow("Gradient back x", Gradient_back_x);
-		imshow("Gradient back y", Gradient_back_y);
+		//imshow("Gradient fore x", Gradient_fore_x);
+		//imshow("Gradient fore y", Gradient_fore_y);
 
-		imshow("Gradient diff", Gradient_diff);
+		//imshow("Gradient back x", Gradient_back_x);
+		//imshow("Gradient back y", Gradient_back_y);
+
+		imshow("Gradient diff", Graddiff8uc1);
 
 		//imshow("Tdiff", Tdiff);
 		//imshow("Ydiff", Ydiff);
 		//imshow("Cdiff", Cdiff);
 
-		//imshow("OR Low", ORmap_Low);
-		//imshow("OR Med", ORmap_Med);
-		//imshow("OR High", ORmap_High);
+		imshow("OR Low", ORmap_Low);
+		imshow("OR Med", ORmap_Med);
+		imshow("OR High", ORmap_High);
 
 		imshow("Boundary Low", Boundary_Low);
 		imshow("Boundary Med", Boundary_Med);
 		imshow("Boundary High", Boundary_High);
 
-		keyboard = waitKey(30);
+		imwrite("Tmap_Low.bmp", Tmap_Low);
+		imwrite("Tmap_Med.bmp", Tmap_Med);
+		imwrite("Tmap_High.bmp", Tmap_High);
 
-		//system("pause");
+		imwrite("Ymap_Low.bmp", Ymap_Low);
+		imwrite("Ymap_Med.bmp", Ymap_Med);
+		imwrite("Ymap_High.bmp", Ymap_High);
+
+		imwrite("Cmap_Low.bmp", Cmap_Low);
+		imwrite("Cmap_Med.bmp", Cmap_Med);
+		imwrite("Cmap_High.bmp", Cmap_High);
+
+		imwrite("OR_Low.bmp", ORmap_Low);
+		imwrite("OR_Med.bmp", ORmap_Med);
+		imwrite("OR_High.bmp", ORmap_High);
+
+	
+		imwrite("Boundary Low.bmp", Boundary_Low);
+		imwrite("Boundary Med.bmp", Boundary_Med);
+		imwrite("Boundary High.bmp", Boundary_High);
+
+		imwrite("Edge map.bmp", Edgemap);
+
+		keyboard = waitKey(0);
+
+//		system("pause");
 
 		cout << frame_no++ << endl;
 	}
