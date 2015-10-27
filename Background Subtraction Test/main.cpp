@@ -233,7 +233,7 @@ int main(int argc, char* argv[])
 			Gradient_diff = Mat(Rows, Cols, CV_16SC1);
 		}
 
-		//OrigImage = imread("foretest.bmp");
+		OrigImage = imread("foretest.bmp");
 
 
 		//YCbCr »ý¼º
@@ -364,9 +364,9 @@ int main(int argc, char* argv[])
 
 		imwrite("Edge map.bmp", Edgemap);
 
-		keyboard = waitKey(0);
+		keyboard = waitKey(30);
 
-//		system("pause");
+		system("pause");
 
 		cout << frame_no++ << endl;
 	}

@@ -96,6 +96,7 @@
     <ClCompile Include="LearningGaussian.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NormalVector.cpp" />
+    <ClCompile Include="ShadowDetection.cpp" />
     <ClCompile Include="Threshold_Image.cpp" />
     <ClCompile Include="TriangleAlgorithm.cpp" />
   </ItemGroup>
