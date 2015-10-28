@@ -9,7 +9,7 @@
 
 using namespace cv;
 
-void ShadowMap(Mat* Shadow_Map, Mat* Input_Image, Mat* Background_Image)
+void ShadowMapCreator(Mat* Shadow_Map, Mat* Input_Image, Mat* Background_Image)
 {
 	
 	Mat HSV_Image, HSV_Background;

@@ -161,6 +161,8 @@ int main(int argc, char* argv[])
 	Mat Edge_fore, Edge_back;
 	Mat Edgemap;
 
+	//Shadow Map
+	Mat ShadowMap;
 
 	TriThreshold Thresh;
 
@@ -231,9 +233,11 @@ int main(int argc, char* argv[])
 			Gradient_back_y = Mat(Rows, Cols, CV_16SC1);
 
 			Gradient_diff = Mat(Rows, Cols, CV_16SC1);
+
+			ShadowMap = Mat(Rows, Cols, CV_8UC1);
 		}
 
-		OrigImage = imread("foretest.bmp");
+		//OrigImage = imread("foretest.bmp");
 
 
 		//YCbCr »ý¼º
@@ -286,7 +290,9 @@ int main(int argc, char* argv[])
 		BoundaryMap(&Boundary_Low, &ORmap_Low);
 		BoundaryMap(&Boundary_Med, &ORmap_Med);
 		BoundaryMap(&Boundary_High, &ORmap_High);
-		
+
+		//Shadow Map
+		ShadowMapCreator(&ShadowMap, &OrigImage, &BackImage);
 
 		//Connected Component Test
 		Mat ConnectLabel_Low, ConnectLabel_Med, ConnectLabel_High;
@@ -299,6 +305,8 @@ int main(int argc, char* argv[])
 		imshow("Connect Med", ConnectLabel_Med);
 		imshow("Connect High", ConnectLabel_High);
 
+		imshow("Shadow Map", ShadowMap);
+		imwrite("Shadow Map.jpg", ShadowMap);
 
 		//morphologyEx(Ymap, Ymap, MORPH_CLOSE, element);
 		//morphologyEx(Ymap, Ymap, MORPH_OPEN, element);
@@ -366,7 +374,7 @@ int main(int argc, char* argv[])
 
 		keyboard = waitKey(30);
 
-		system("pause");
+		//system("pause");
 
 		cout << frame_no++ << endl;
 	}
