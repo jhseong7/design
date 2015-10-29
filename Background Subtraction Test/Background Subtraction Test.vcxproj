@@ -88,11 +88,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConvexHull.cpp" />
     <ClCompile Include="Edge.cpp" />
     <ClCompile Include="DifferentialImageCalculate.cpp" />
     <ClCompile Include="Gradient.cpp" />
     <ClCompile Include="Histogram.cpp" />
     <ClCompile Include="IBS Matching.cpp" />
+    <ClCompile Include="ImageSum.cpp" />
     <ClCompile Include="LearningGaussian.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NormalVector.cpp" />

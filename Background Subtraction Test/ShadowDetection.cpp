@@ -2,7 +2,7 @@
 
 #define ALPHA 0.0
 #define BETA 1.0
-#define S_THRESH 10
+#define S_THRESH 5
 #define H_THRESH 10
 
 #define min_fast(a,b) ( (a>b) ? b : a)

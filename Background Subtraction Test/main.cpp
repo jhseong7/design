@@ -168,6 +168,12 @@ int main(int argc, char* argv[])
 
 
 	VideoCapture capture(videoFilename);
+
+	//Convex Hull
+	Mat Convex_hull;
+
+	//Final Image
+	Mat FOutputImage;
 	
 	
 	if (!capture.isOpened())
@@ -235,6 +241,10 @@ int main(int argc, char* argv[])
 			Gradient_diff = Mat(Rows, Cols, CV_16SC1);
 
 			ShadowMap = Mat(Rows, Cols, CV_8UC1);
+
+			Convex_hull = Mat(Rows, Cols, CV_8UC1);
+
+			FOutputImage = Mat(Rows, Cols, CV_8UC1);
 		}
 
 		//OrigImage = imread("foretest.bmp");
@@ -277,7 +287,7 @@ int main(int argc, char* argv[])
 		ThresholdImageCreate(&Graddiff8uc1, &Graddiff8uc1);
 
 		//morphology START
-		Mat element2 = getStructuringElement(MORPH_CROSS, Size(2 * 2 + 1, 2 * 2 + 1), Point(2, 2));
+		Mat element2 = getStructuringElement(MORPH_CROSS, Size(2 * 3 + 1, 2 * 3 + 1), Point(3, 3));
 
 
 		morphologyEx(Graddiff8uc1, Graddiff8uc1, MORPH_CLOSE, element2);
@@ -301,12 +311,23 @@ int main(int argc, char* argv[])
 		connectedComponents(Boundary_Med, ConnectLabel_Med, 8, CV_16U);
 		connectedComponents(Boundary_High, ConnectLabel_High, 8, CV_16U);
 
+		//ConvexHullImage(&Convex_hull, &ORmap_Low);
+
 		imshow("Connect Low", ConnectLabel_Low);
 		imshow("Connect Med", ConnectLabel_Med);
 		imshow("Connect High", ConnectLabel_High);
 
 		imshow("Shadow Map", ShadowMap);
 		imwrite("Shadow Map.jpg", ShadowMap);
+
+		ImageMath(&FOutputImage, &ORmap_Med, &Edgemap, 1);
+
+		imshow("Output2", FOutputImage);
+
+		ImageAbsSubtract(&FOutputImage, &FOutputImage, &ShadowMap, '0');
+
+		imshow("Output", FOutputImage);
+		imwrite("Output.jpg", FOutputImage);
 
 		//morphologyEx(Ymap, Ymap, MORPH_CLOSE, element);
 		//morphologyEx(Ymap, Ymap, MORPH_OPEN, element);
